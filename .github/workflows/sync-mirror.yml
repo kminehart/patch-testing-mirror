@@ -43,5 +43,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SYNC_TOKEN }}
         run: |
-          git remote add mirror "https://@github.com/kminehart/patch-testing-mirror.git"
+          git remote add mirror "https://github.com/kminehart/patch-testing-mirror.git"
           git push --force --set-upstream mirror "${GITHUB_REF#refs/head/}"
