@@ -1,0 +1,37 @@
+name: Unpatched sync to mirror
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on pull requests
+  push:
+    branches:
+      - "!main"
+      - "!v*.*.*"
+  workflow_dispatch:
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: kminehart/patch-testing-mirror
+      - name: Reset to match upstream
+        env:
+          SYNC_TOKEN: "${{ secrets.GH_SYNC_TOKEN }}"
+        run: |
+          # The remote 'origin' refers to the mirror.
+          # The remote 'upstream' refers to the repository being mirrored.
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          git config --unset-all http.https://github.com/.extraheader
+          git remote set-url origin https://oauth:${SYNC_TOKEN}@github.com/kminehart/patch-testing-mirror.git
+          git remote add upstream https://github.com/kminehart/patch-testing.git
+          git fetch upstream $BRANCH
+
+          # Force $BRANCH in the mirror to match our $BRANCH
+          git push origin --force "refs/remotes/upstream/${BRANCH}:refs/heads/${BRANCH}"
+          git reset --hard origin/main
