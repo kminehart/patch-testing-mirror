@@ -32,12 +32,12 @@ jobs:
           repository: kminehart/patches
           path: patches
       # Silently the patches onto the current git repo
-      - name: Apply patches
-        run: ./patches/apply.sh "${GITHUB_REF#refs/heads/}"
-        id: patches
-      - name: Handle patch failure
-        if: ${{ failure() && steps.patches.conclusion == 'failure' }}
-        run: echo "::error title='Failed to apply patches'::Your pull request is not compatible with active patches. See the documentation here for how to resolve this error."
+      # - name: Apply patches
+      #   run: ./patches/apply.sh "${GITHUB_REF#refs/heads/}"
+      #   id: patches
+      # - name: Handle patch failure
+      #   if: ${{ failure() && steps.patches.conclusion == 'failure' }}
+      #   run: echo "::error title='Failed to apply patches'::Your pull request is not compatible with active patches. See the documentation here for how to resolve this error."
       - name: Sync
         env:
           SYNC_TOKEN: "${{ secrets.GH_SYNC_TOKEN }}"
