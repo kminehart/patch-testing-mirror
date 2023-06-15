@@ -38,5 +38,9 @@ jobs:
       # Silently the patches onto the current git repo
       - name: Apply patches
         run: ./patches/apply.sh ${{ github.event.pull_request.base.ref }}
+        id: patches
+      - name: Handle patch failure
+        if: ${{ failure() && steps.patches.conclusion == 'failure' }}
+        run: echo "::error title='Failed to apply patches'::Your pull request is not compatible with active patches. See the documentation here for how to resolve this error."
       - name: Test
         run: go test ./...
