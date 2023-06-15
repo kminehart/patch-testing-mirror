@@ -24,6 +24,8 @@ jobs:
         env:
           SYNC_TOKEN: "${{ secrets.GH_SYNC_TOKEN }}"
         run: |
+          # The remote 'origin' refers to the mirror.
+          # The remote 'upstream' refers to the repository being mirrored.
           BRANCH="${GITHUB_REF#refs/heads/}"
           git config --unset-all http.https://github.com/.extraheader
           git remote set-url origin https://oauth:${SYNC_TOKEN}@github.com/kminehart/patch-testing-mirror.git
@@ -32,6 +34,8 @@ jobs:
 
           # Force $BRANCH in the mirror to match our $BRANCH
           git push origin --force "refs/remotes/upstream/${BRANCH}:refs/heads/${BRANCH}"
+          git reset --hard origin/main
+
         # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
         # `apply.sh` uses `git am`, which applies git patches as commits.
         # creating commits requires the git config to be set with user.name and user.email.
