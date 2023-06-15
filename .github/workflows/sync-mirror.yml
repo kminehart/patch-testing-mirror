@@ -27,7 +27,7 @@ jobs:
           BRANCH="${GITHUB_REF#refs/heads/}"
           git config --unset-all http.https://github.com/.extraheader
           git remote set-url origin https://oauth:${SYNC_TOKEN}@github.com/kminehart/patch-testing-mirror.git
-          git remote set-url upstream https://github.com/kminehart/patch-testing.git
+          git remote add upstream https://github.com/kminehart/patch-testing.git
 
           # Force $BRANCH in the mirror to match our $BRANCH
           git push origin --force "refs/remotes/upstream/${BRANCH}:refs/heads/${BRANCH}"
