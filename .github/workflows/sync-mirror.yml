@@ -43,7 +43,7 @@ jobs:
         with:
           repository: kminehart/patches
           path: patches
-      Silently the patches onto the current git repo
+      # Silently the patches onto the current git repo
       - name: Apply patches
         run: ./patches/apply.sh "${GITHUB_REF#refs/heads/}"
         id: patches
