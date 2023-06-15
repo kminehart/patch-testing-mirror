@@ -1,11 +1,12 @@
-# This is a basic workflow to help you get started with Actions
-name: Sync and run PR tests
+name: Sync to mirror
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on pull requests
-  pull_request: {}
-  # Allows you to run this workflow manually from the Actions tab
+  push:
+    branches:
+      - "main"
+      - "v*.*.*"
   workflow_dispatch:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -18,10 +19,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.20'
         # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
         # `apply.sh` uses `git am`, which applies git patches as commits.
         # creating commits requires the git config to be set with user.name and user.email.
@@ -29,7 +26,6 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
-
       - name: Checkout active patches
         uses: actions/checkout@v3
         with:
@@ -37,10 +33,17 @@ jobs:
           path: patches
       # Silently the patches onto the current git repo
       - name: Apply patches
-        run: ./patches/apply.sh ${{ github.event.pull_request.base.ref }}
+        run: ./patches/apply.sh "${GITHUB_REF#refs/heads/}"
         id: patches
       - name: Handle patch failure
         if: ${{ failure() && steps.patches.conclusion == 'failure' }}
         run: echo "::error title='Failed to apply patches'::Your pull request is not compatible with active patches. See the documentation here for how to resolve this error."
-      - name: Test
-        run: go test ./...
+      - name: Sync
+        env:
+          SYNC_TOKEN: "${{ secrets.GH_SYNC_TOKEN }}"
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          git config --unset-all http.https://github.com/.extraheader
+          git remote add mirror https://oauth:${SYNC_TOKEN}@github.com/kminehart/patch-testing-mirror.git
+          git fetch mirror $BRANCH --unshallow
+          git push --force --set-upstream mirror $BRANCH
