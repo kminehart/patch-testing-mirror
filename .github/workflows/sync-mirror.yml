@@ -44,4 +44,5 @@ jobs:
         run: |
           git config --unset-all http.https://github.com/.extraheader
           git remote add mirror https://oauth:${SYNC_TOKEN}@github.com/kminehart/patch-testing-mirror.git
+          git fetch mirror
           git push --force --set-upstream mirror "${GITHUB_REF#refs/head/}"
