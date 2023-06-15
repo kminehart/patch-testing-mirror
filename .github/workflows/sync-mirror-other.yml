@@ -1,12 +1,12 @@
-name: Sync to mirror
+name: Unpatched sync to mirror
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on pull requests
   push:
     branches:
-      - "main"
-      - "v*.*.*"
+      - "!main"
+      - "!v*.*.*"
   workflow_dispatch:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -34,28 +34,4 @@ jobs:
 
           # Force $BRANCH in the mirror to match our $BRANCH
           git push origin --force "refs/remotes/upstream/${BRANCH}:refs/heads/${BRANCH}"
-          git fetch origin ${BRANCH}
           git reset --hard origin/main
-
-        # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
-        # `apply.sh` uses `git am`, which applies git patches as commits.
-        # creating commits requires the git config to be set with user.name and user.email.
-      - name: git config
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-      - name: Checkout active patches
-        uses: actions/checkout@v3
-        with:
-          repository: kminehart/patches
-          path: patches
-      # Silently the patches onto the current git repo
-      - name: Apply patches
-        run: ./patches/apply.sh "${GITHUB_REF#refs/heads/}"
-        id: patches
-      - name: Handle patch failure
-        if: ${{ failure() && steps.patches.conclusion == 'failure' }}
-        run: echo "::error title='Failed to apply patches when mirroring'::The sync process was not able to apply active patches to the mirror. See the documentation here for how to resolve this error."
-      - name: Sync
-        run: |
-          git push origin $BRANCH
