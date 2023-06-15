@@ -27,9 +27,8 @@ jobs:
         with:
           repository: kminehart/patches
           path: patches
-
       # Silently the patches onto the current git repo
       - name: Apply patches
-        run: ./patches/apply.sh {{ github.event.pull_request.base.ref }}
+        run: ls -al && ls -al ../ && ./patches/apply.sh {{ github.event.pull_request.base.ref }}
       - name: Test
         run: go test ./...
