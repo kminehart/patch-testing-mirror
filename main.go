@@ -6,6 +6,11 @@ func Add(a, b int) int {
 	return a + b
 }
 
+func Multiply(a, b int) int {
+	return a * b
+}
+
 func main() {
 	log.Println(Add(1, 2))
+	log.Println(Multiply(1, 2))
 }

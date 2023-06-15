@@ -10,3 +10,9 @@ func TestAdd(t *testing.T) {
 		t.Fatalf("Add(2, 2) should equal '%d' but equals '%d'", 3, res)
 	}
 }
+
+func TestMultply(t *testing.T) {
+	if res := Multiply(1, 2); res != 2 {
+		t.Fatalf("Multiply(1, 2) should equal '%d' but equals '%d'", 2, res)
+	}
+}
