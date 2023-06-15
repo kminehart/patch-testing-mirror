@@ -33,7 +33,7 @@ jobs:
           path: patches
       # Silently the patches onto the current git repo
       - name: Apply patches
-        run: ./patches/apply.sh "${GITHUB_REF#refs/head/}"
+        run: ./patches/apply.sh "${GITHUB_REF#refs/heads/}"
         id: patches
       - name: Handle patch failure
         if: ${{ failure() && steps.patches.conclusion == 'failure' }}
@@ -44,5 +44,5 @@ jobs:
         run: |
           git config --unset-all http.https://github.com/.extraheader
           git remote add mirror https://oauth:${SYNC_TOKEN}@github.com/kminehart/patch-testing-mirror.git
-          git fetch mirror ${GITHUB_REF#refs/head/}
-          git push --force --set-upstream mirror "${GITHUB_REF#refs/head/}"
+          git fetch mirror ${GITHUB_REF#refs/heads/}
+          git push --force --set-upstream mirror "${GITHUB_REF#refs/heads/}"
