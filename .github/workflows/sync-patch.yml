@@ -20,5 +20,5 @@ jobs:
           path: patches
       - name: Create patch
         run: |
-          git format-patch ${{github.event.pull_request.head}}..${{github.event.pull_request.head}} --stdout > diff.patch
+          git format-patch ${{github.event.pull_request.head.ref}}..${{github.event.pull_request.head.ref}} --stdout > diff.patch
           cat diff.patch
