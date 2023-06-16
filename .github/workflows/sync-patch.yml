@@ -1,8 +1,7 @@
 name: Sync pull requests to the patches repository
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronized]
+  pull_request: {}
   workflow_dispatch:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -13,6 +12,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Checkout active patches
         uses: actions/checkout@v3
         with:
@@ -20,5 +21,6 @@ jobs:
           path: patches
       - name: Create patch
         run: |
-          git format-patch ${{github.event.pull_request.base.ref}}..${{github.event.pull_request.head.ref}} --stdout > diff.patch
+          git fetch --unshallow origin ${{github.event.pull_request.base.ref}}
+          git format-patch origin/${{github.event.pull_request.base.ref}} --stdout > diff.patch
           cat diff.patch
