@@ -7,7 +7,6 @@ on:
 jobs:
   create-patch-and-open-pr:
     if: github.repository == 'kminehart/patch-testing-mirror'
-    if: sender.organization == 'grafana'
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -22,6 +21,7 @@ jobs:
           path: patches
       - name: Create patch
         run: |
+          echo "${{sender.organzation}}"
           git fetch --unshallow origin ${{github.event.pull_request.base.ref}}
           git format-patch origin/${{github.event.pull_request.base.ref}} --stdout > diff.patch
           cat diff.patch
